@@ -47,7 +47,7 @@ a way to test them. As you can see in the figure, I can safely choose
 the new method because it is just as fast as the "fast" version and it
 retains needed compatibility.
 
-![vcs-compare](/img/vcs-compare_time.png)
+![vcs-compare][vcs-compare]
 
 This was all produced by the simple command (of course, the `$`
 signifies the commandline):
@@ -83,3 +83,4 @@ please fork it and let me know!
 
 [tp]:https://github.com/erikw/tmux-powerline
 [timeit]:http://docs.python.org/2/library/timeit.html
+[vcs-compare]:https://raw.github.com/scicalculator/time-flies-py/master/img/vcs-compare_time.png
