@@ -1,15 +1,12 @@
 #!/usr/bin/env python
 
-import sys
+import sys, timeit
 
 import numpy as np
 from scipy.stats import gaussian_kde
 
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import figure, show
-
-from timeit     import repeat
-#from subprocess import call
 
 STMT_QUIET = "call(%r, stdout=PIPE)"
 STMT_VERBOSE = "call(%r)"
@@ -70,7 +67,7 @@ def run_timer(stmt, setup=None, number=10, repeat=10, outfile="/tmp/timepy-data.
     t = np.zeros((len(stmt),repeat))
     for i, s in enumerate(stmt):
         print "Timing: %s" % raw[i]
-        t[i,:] = repeat(stmt=s, setup=setup, number=number)
+        t[i,:] = timeit.repeat(stmt=s, setup=setup, number=number, repeat=repeat)
 
     # save the data before plotting
     if outfile:
