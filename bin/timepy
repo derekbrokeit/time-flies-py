@@ -8,7 +8,7 @@ from scipy.stats import gaussian_kde
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import figure, show
 
-from timeit     import timeit
+from timeit     import repeat
 #from subprocess import call
 
 STMT_QUIET = "call(%r, stdout=PIPE)"
@@ -27,12 +27,14 @@ def eval_args():
     parser.add_argument("-f","--fig-file", help="Specify the output file for the figure")
     parser.add_argument("-v","--verbose", help="Print the output of every command to stdout", action="store_true")
     parser.add_argument("--hist", help="Plot the histogram instead of filled curve", action="store_true")
+    parser.add_argument("--load", help="Loads the data from a data-file and plots it", action="store_true")
 
     parser.add_argument("stmt", help="The system statement to run, comparison is done if more than one are provided", nargs="+")
 
     args = parser.parse_args()
 
     # reset the sim times
+    load = False
     kwargs = {}
     if args.number:
         kwargs["number"] = args.number
@@ -48,10 +50,12 @@ def eval_args():
         kwargs["figfile"] = args.fig_file
     if args.verbose:
         kwargs["verbose"] = True
+    if args.load:
+        load = True
 
     raw = args.stmt
 
-    return raw, kwargs
+    return raw, load, kwargs
 
 def gen_call_statement(orig, verbose=False, **kwargs):
     if verbose:
@@ -62,23 +66,31 @@ def gen_call_statement(orig, verbose=False, **kwargs):
     stmt = [pattern % s.split(" ") for s in orig]
     return stmt
 
-def cli_timer(raw_stmt, **kwargs):
-    stmt = gen_call_statement(raw_stmt, **kwargs)
-
-    return run_timer(stmt, CLI_SETUP, **kwargs)
-
-
 def run_timer(stmt, setup=None, number=10, repeat=10, outfile="/tmp/timepy-data.txt",**kwargs):
     t = np.zeros((len(stmt),repeat))
     for i, s in enumerate(stmt):
         print "Timing: %s" % raw[i]
-        t[i,:] = [ timeit(stmt=s, setup=setup, number=number) for j in xrange(repeat) ]
+        t[i,:] = repeat(stmt=s, setup=setup, number=number)
 
     # save the data before plotting
     if outfile:
         np.savetxt(outfile, t)
 
     return t
+
+def cli_timer(raw_stmt, **kwargs):
+    stmt = gen_call_statement(raw_stmt, **kwargs)
+
+    return run_timer(stmt, CLI_SETUP, **kwargs)
+
+def load_timer(raw_stmt, **kwargs):
+    try:
+        outfile = kwargs["outfile"]
+    except KeyError:
+        outfile = "/tmp/timepy-data.txt"
+
+    t = np.loadtxt(outfile)
+    gen_plots(t, raw, **kwargs)
 
 def gen_plots(data, raw, bins=5, number=10, hist=False, figfile="/tmp/timepy-fig.png", **kwargs):
     # convert the total timeit time to time-per-exec
@@ -121,6 +133,9 @@ def gen_plots(data, raw, bins=5, number=10, hist=False, figfile="/tmp/timepy-fig
 
 if __name__ == "__main__":
     print "timepy"
-    raw, kw = eval_args()
-    t = cli_timer(raw, **kw)
-    gen_plots(t, raw, **kw)
+    raw, load, kwargs = eval_args()
+    if load:
+        load_timer(raw, **kwargs)
+    else:
+        t = cli_timer(raw, **kwargs)
+    gen_plots(t, raw, **kwargs)
