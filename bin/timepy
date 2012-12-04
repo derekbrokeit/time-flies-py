@@ -80,7 +80,9 @@ def run_timer(stmt, setup=None, number=10, repeat=10, outfile=None,**kwargs):
 
     return t
 
-def gen_plots(data, raw, bins=5, hist=False, figfile=None, **kwargs):
+def gen_plots(data, raw, bins=5, number=10, hist=False, figfile=None, **kwargs):
+    # convert the total timeit time to time-per-exec
+    data /= number
 
     figure()
     for i,a in enumerate(data):
@@ -91,7 +93,6 @@ def gen_plots(data, raw, bins=5, hist=False, figfile=None, **kwargs):
         density._compute_covariance()
         y = density(x)
         # plot the gaussian line graph
-        plt.plot(x, y, COLOR[i], linewidth=2, label=raw[i])
 
         if hist:
             # plots a histogram
@@ -100,6 +101,7 @@ def gen_plots(data, raw, bins=5, hist=False, figfile=None, **kwargs):
         else:
             # fills in the gaussian line-graph
             plt.fill_between(x, 0, y, label=raw[i], color=COLOR[i], alpha=0.5, )
+            plt.plot(x, y, COLOR[i], linewidth=2, label=raw[i])
 
     # print the labels
     plt.legend()
