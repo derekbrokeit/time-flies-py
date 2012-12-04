@@ -86,22 +86,22 @@ def gen_plots(data, raw, bins=5, number=10, hist=False, figfile="/tmp/timepy-fig
 
     figure()
     for i,a in enumerate(data):
-        # find a gausian curve fit for the data
-        density = gaussian_kde(a)
-        x = np.linspace(0,max(a)+.1,200)
-        density.covariance_factor = lambda : .25
-        density._compute_covariance()
-        y = density(x)
-        # plot the gaussian line graph
 
         if hist:
             # plots a histogram
             n, bin, patches = plt.hist(t[i,:].T, bins=bins, normed=1, histtype='stepfilled', 
                     color=COLOR[i], alpha=0.5)
         else:
+            # plot the gaussian line graph
+            # find a gausian curve fit for the data
+            density = gaussian_kde(a)
+            x = np.linspace(0,max(a)+.1,200)
+            density.covariance_factor = lambda : .25
+            density._compute_covariance()
+            y = density(x)
+            plt.plot(x, y, COLOR[i], linewidth=2, label=raw[i])
             # fills in the gaussian line-graph
             plt.fill_between(x, 0, y, label=raw[i], color=COLOR[i], alpha=0.5, )
-            plt.plot(x, y, COLOR[i], linewidth=2, label=raw[i])
 
     # print the labels
     plt.legend()
