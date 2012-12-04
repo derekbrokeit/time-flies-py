@@ -1,0 +1,108 @@
+#!/usr/bin/env python
+
+import sys
+
+import numpy as np
+from scipy.stats import gaussian_kde
+
+import matplotlib.pyplot as plt
+from matplotlib.pyplot import figure, show
+
+from timeit     import timeit
+#from subprocess import call
+
+num  = 10
+r    = 10
+b    = 5
+raw  = None
+hist = False
+out  = None
+fig  = None
+
+STMT_PROCESS = "call(%r)"
+SETUP = "from subprocess import call"
+COLOR = "brgkmy"
+
+def eval_args():
+    global num, r, b, raw, hist, out, fig
+    import argparse
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("-n","--number", help="How many times to execute the statement", type=int)
+    parser.add_argument("-r","--repeat", help="How many times to repeat the timer", type=int)
+    parser.add_argument("-b","--bins", help="Number of bins in the histogram", type=int)
+    parser.add_argument("-d","--out-data", help="Specify the output file for the data")
+    parser.add_argument("-f","--out-figure", help="Specify the output file for the figure")
+    parser.add_argument("--hist", help="Plot the histogram instead of filled curve", action="store_true")
+
+    parser.add_argument("stmt", help="The system statement to run, comparison is done if more than one are provided", nargs="+")
+
+    args = parser.parse_args()
+
+    # reset the sim times
+    if args.number:
+        num = args.number
+    if args.repeat:
+        r = args.repeat
+    if args.bins:
+        b = args.bins
+    if args.hist:
+        hist = True
+    if args.out_data:
+        out = args.out_data
+    if args.out_figure:
+        fig = args.out_figure
+    if args.stmt:
+        raw = args.stmt
+        prepare_statement(args.stmt)
+
+def prepare_statement(orig):
+    stmt = [STMT_PROCESS % s.split(" ") for s in orig]
+    return stmt
+
+def run_timer(stmt):
+    t = np.zeros((len(stmt),r))
+    for i, s in enumerate(stmt):
+        t[i,:] = [ timeit(stmt=s, setup=SETUP, number=num) for j in xrange(r) ]
+
+    # save the data before plotting
+    if out:
+        np.savetxt(out, t)
+
+    gen_plots(t, raw)
+
+def gen_plots(t, raw):
+
+    figure()
+    for i,a in enumerate(t):
+        # find a gausian curve fit for the data
+        density = gaussian_kde(a)
+        x = np.linspace(0,max(a)+.1,200)
+        density.covariance_factor = lambda : .25
+        density._compute_covariance()
+        y = density(x)
+        # plot the gaussian line graph
+        plt.plot(x, y, COLOR[i], linewidth=2, label=raw[i])
+
+        if hist:
+            # plots a histogram
+            n, bin, patches = plt.hist(t[i,:].T, bins=b, normed=1, histtype='stepfilled', 
+                    color=COLOR[i], alpha=0.5)
+        else:
+            # fills in the gaussian line-graph
+            plt.fill_between(x, 0, y, label=raw[i], color=COLOR[i], alpha=0.5, )
+
+    # print the labels
+    plt.legend()
+    plt.ylabel("Count")
+    plt.xlabel("Time (s)")
+
+    # save the figure before showing
+    if fig:
+        plt.savefig(fig)
+
+    show()
+
+if __name__ == "__main__":
+    eval_args()
+    run_timer(prepare_statement(raw))
