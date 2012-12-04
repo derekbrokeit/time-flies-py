@@ -68,7 +68,7 @@ def cli_timer(raw_stmt, **kwargs):
     return run_timer(stmt, CLI_SETUP, **kwargs)
 
 
-def run_timer(stmt, setup=None, number=10, repeat=10, outfile=None,**kwargs):
+def run_timer(stmt, setup=None, number=10, repeat=10, outfile="/tmp/timepy-data.txt",**kwargs):
     t = np.zeros((len(stmt),repeat))
     for i, s in enumerate(stmt):
         print "Timing: %s" % raw[i]
@@ -80,7 +80,7 @@ def run_timer(stmt, setup=None, number=10, repeat=10, outfile=None,**kwargs):
 
     return t
 
-def gen_plots(data, raw, bins=5, number=10, hist=False, figfile=None, **kwargs):
+def gen_plots(data, raw, bins=5, number=10, hist=False, figfile="/tmp/timepy-fig.png", **kwargs):
     # convert the total timeit time to time-per-exec
     data /= number
 
