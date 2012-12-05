@@ -8,7 +8,7 @@ a simple python script that takes advantage of the standard python
 program and allow you to compare multiple versions to make an informed
 decision.
 
-*Requirements*: Matplotlib, numpy
+**Requirements**: Matplotlib, numpy
 
 ## Usage
 
@@ -54,7 +54,7 @@ signifies the commandline):
 
     $ timepy -r 100 -f plot2.png -d data.txt ./original_1.0 ./fast_incompatible ./new_compatable
 
-## Interpretation
+### Interpretation
 
 Because the `timeit` command can be occasionally thrown off by
 background processes, the data in the figure should be interpretted
@@ -62,7 +62,7 @@ with good judgement. That being said, it does not represent a good
 statistical distribution under most circumstances. The relevant part of
 the [python docs][timeit] says it best:
 
-> *Note* It’s tempting to calculate mean and standard deviation from the
+> **Note** It’s tempting to calculate mean and standard deviation from the
 > result vector and report these. However, this is not very useful. In a
 > typical case, the lowest value gives a lower bound for how fast your
 > machine can run the given code snippet; higher values in the result
@@ -75,11 +75,15 @@ the [python docs][timeit] says it best:
 So, to sumarize, you are better off focusing on the lower-end of each
 histogram produced and not try to measure mean or standard deviation.
 
-## Feedback
+Feedback and Licence
+--------------------
 
 `timepy` should be open and useful to anyone interested, please feel
-free to use it. If you think it's missing functionality or needs fixing,
-please fork it and let me know!
+free to use it. This script is licensed under the MIT license and
+more authors are always welcome. Fork away! If you think it's missing
+functionality or needs fixing, please fork it and let me know!
+
+
 
 [tp]:https://github.com/erikw/tmux-powerline
 [timeit]:http://docs.python.org/2/library/timeit.html
