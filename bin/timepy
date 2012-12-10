@@ -87,7 +87,7 @@ def load_timer(raw_stmt, **kwargs):
         outfile = "/tmp/timepy-data.txt"
 
     t = np.loadtxt(outfile)
-    gen_plots(t, raw, **kwargs)
+    return t
 
 def gen_plots(data, raw, bins=5, number=10, hist=False, figfile="/tmp/timepy-fig.png", **kwargs):
     # convert the total timeit time to time-per-exec
@@ -138,7 +138,7 @@ if __name__ == "__main__":
     print "timepy"
     raw, load, kwargs = eval_args()
     if load:
-        load_timer(raw, **kwargs)
+        t = load_timer(raw, **kwargs)
     else:
         t = cli_timer(raw, **kwargs)
     gen_plots(t, raw, **kwargs)
