@@ -104,7 +104,7 @@ def gen_plots(data, raw, bins=5, number=10, hist=False, figfile="/tmp/timepy-fig
             # plot the gaussian line graph
             # find a gausian curve fit for the data
             density = gaussian_kde(a)
-            x = np.linspace(0,max(a)+.1,200)
+            x = np.linspace(0,max(a)*1.4,200)
             density.covariance_factor = lambda : .25
             density._compute_covariance()
             y = density(x)
