@@ -122,6 +122,12 @@ def gen_plots(data, raw, bins=5, number=10, hist=False, figfile="/tmp/timepy-fig
     ylim = plt.ylim()
     plt.axis([0, xlim[1], 0, ylim[1]])
 
+    # put a footnote to explain the timepy utility
+    plt.annotate('Made with timepy: <github.com/scicalculator/time-flies-py>', 
+            xy=(0,1.01), xycoords='axes fraction',
+            
+            fontsize=10)
+
     # save the figure before showing
     if figfile:
         plt.savefig(figfile)
